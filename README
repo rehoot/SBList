@@ -1,0 +1,63 @@
+# This set of VERY BUGGY programs is an attempt to create some list objects
+# and string objects that can replace regular python lists and 
+# and strings except they will have built-in undo.
+#
+# If you want to explore this, first look at the SBList.py program
+# and read the notes at the top (same as the notes below), then
+# look at the SBString.py program.
+#
+# You can run a few tests by running something like this:
+# 
+#   python SBTest.py
+#
+# To run the terrible text editor that I was trying to build,
+# run something like this (for python 3.2+)
+#
+#    python sbed03.py -f test.txt
+#
+# Here are the notes for the SBList object, and it is then used
+# in the SBString object...
+# This program will define a list object called SBList that has 
+# the functionality of a regular list object but internally it 
+# is based on (mostly) immutable objects and will hopefully 
+# allow undo operations without having to do any extra programming.
+#
+# The general idea is that each entry is stored and never deleted,
+# and the data is presented in the desired order by keeping a 
+# separate list with indexes to the appropriate item.
+# Because every entry is saved in the (imitation) "read-only"
+# storage area, I can perform "undo" operations by simply changing
+# the master pointer to point to a prior state (which is just a
+# list of pointers to the real data).
+#
+# Example 
+# 
+# 1) mylist = SBList(['a', 'b', 'c', 'd'])
+#    internally:
+#      SBList.l = ['a', 'b', 'c', 'd']
+#      SBList.state_id will be set to zero
+#      SBList.state = [[[0, 5]]]
+#        ('state' is an list, that contains an list for each state.  Inside
+#        the list for each state is a collection of 2-item lists that
+#        represent the starting and ending indexes into SBList.l that should be
+#        presented if the object is printed or accessed)
+#      
+# 2) mylist.insert(1, 'x')  --insert an 'x' before offset 1
+#      SBList.l = ['a', 'b', 'c', 'd', 'x']  ('x' is stored at the end)
+#      SBList.state_id will be incremented to 1
+#      note: Remember that python slice notation starts at
+#      zero and grabs up to but not including the last
+#      entry, so SBList.l[1: 3] = ['b', 'c']
+#      SBList.state = [
+#                      [[0, 5]],   <<that is the old state
+#                      [[0,1], [4, 5], [1, 4]]   <<this is the new state
+#                     ]
+#        state now contains three ranges in pything 'slice' notation
+#        referring to entries in SBList.l.  The first says to take the
+#        first entry in SBList.l, the next says to get item at offset 4,
+#        and the last range says to get the items from offset 1 through
+#        3 from SBList.l.
+#      There is also a log in SBList.log
+#      If you print the contents, it will be in the expected order:
+#      a, x, b, c, d.
+#

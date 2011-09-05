@@ -1,0 +1,11 @@
+This is a small text file that is used to test the 
+sbed03.py text editor, which is full of bugs.
+Your screen needs to be big to run this.
+Use vim-like commands: i=insert, k=up, j=down
+
+run something like this from the UNIX command line:
+  
+  env python sbed03.py -f test.txt
+
+This file might need to have only a small
+number of lines,
